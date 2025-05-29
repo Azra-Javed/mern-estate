@@ -4,32 +4,20 @@ import AboutPage from "./pages/AboutPage";
 import ProfilePage from "./pages/ProfilePage";
 import SignUpPage from "./pages/SignUpPage";
 import SigninPage from "./pages/SigninPage";
+import Layout from "./components/Layout";
 
 function App() {
   const router = createBrowserRouter([
     {
       path: "/",
-      element: <HomePage />,
-    },
-
-    {
-      path: "/sign-in",
-      element: <SigninPage />,
-    },
-
-    {
-      path: "/sign-up",
-      element: <SignUpPage />,
-    },
-
-    {
-      path: "/about",
-      element: <AboutPage />,
-    },
-
-    {
-      path: "/profile",
-      element: <ProfilePage />,
+      element: <Layout />,
+      children: [
+        { path: "/", element: <HomePage /> },
+        { path: "/about", element: <AboutPage /> },
+        { path: "/profile", element: <ProfilePage /> },
+        { path: "/sign-in", element: <SigninPage /> },
+        { path: "/sign-up", element: <SignUpPage /> },
+      ],
     },
   ]);
 
