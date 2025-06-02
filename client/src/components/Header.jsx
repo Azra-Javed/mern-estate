@@ -32,7 +32,7 @@ const Header = () => {
             <li className="hidden text-slate-700 sm:inline hover:underline transition">
               <Link to="/about">About</Link>
             </li>
-            <li className="text-slate-700 hover:underline   transition ">
+            <li className="text-slate-700 hover:underline transition ">
               <Link to="/sign-in">Sign In</Link>
             </li>
           </ul>
