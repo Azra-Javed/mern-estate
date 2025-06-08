@@ -6,8 +6,9 @@ import {
   signInFailure,
   signInSuccess,
 } from "../redux/user/userSlice";
+import OAuth from "../components/OAuth";
 
-const SignUpPage = () => {
+const SignInPage = () => {
   const [formData, setFormData] = useState({});
   const { loading, error } = useSelector((state) => state.user);
   const navigate = useNavigate();
@@ -32,6 +33,11 @@ const SignUpPage = () => {
         },
         body: JSON.stringify(formData),
       });
+
+      // if (!res.ok) {
+      //   const text = await res.text(); // log for debugging
+      //   throw new Error(`Backend error ${res.status}: ${text}`);
+      // }
 
       const data = await res.json();
       if (data.success === false) {
@@ -71,6 +77,7 @@ const SignUpPage = () => {
         >
           {loading ? "Loading..." : "Sign In"}
         </button>
+        <OAuth />
       </form>
 
       <div className="flex gap-2 mt-5">
@@ -84,4 +91,4 @@ const SignUpPage = () => {
   );
 };
 
-export default SignUpPage;
+export default SignInPage;
