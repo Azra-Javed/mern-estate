@@ -1,17 +1,26 @@
 import React, { useEffect, useState, useRef } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  updateUserStart,
+  updateUserSuccess,
+  updateUserFailure,
+} from "../redux/user/userSlice";
 
 const ProfilePage = () => {
   const fileRef = useRef(null);
-  const { currentUser } = useSelector((state) => state.user);
+  const { currentUser, error } = useSelector((state) => state.user);
   const [file, setFile] = useState(undefined);
   const [filePerc, setFilePerc] = useState(0);
   const [fileUploadError, setFileUploadError] = useState(false);
   const [formData, setFormData] = useState({});
   const [uploading, setUploading] = useState(false);
+  const [updateSuccess, setUpdateSuccess] = useState(false);
+
+  const dispatch = useDispatch();
 
   const CLOUDINARY_UPLOAD_PRESET = "user_avatars";
   const CLOUDINARY_CLOUD_NAME = "dwrcdioy5";
+
   useEffect(() => {
     if (file) {
       handleFileUpload(file);
@@ -24,15 +33,8 @@ const ProfilePage = () => {
       setFileUploadError(false);
       setFilePerc(0);
 
-      // Validate file size (2MB limit)
-      if (file.size > 2 * 1024 * 1024) {
-        setFileUploadError(true);
-        setUploading(false);
-        return;
-      }
-
-      // Validate file type
-      if (!file.type.startsWith("image/")) {
+      // Validate file size and type
+      if (file.size > 2 * 1024 * 1024 || !file.type.startsWith("image/")) {
         setFileUploadError(true);
         setUploading(false);
         return;
@@ -41,10 +43,6 @@ const ProfilePage = () => {
       const formData = new FormData();
       formData.append("file", file);
       formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
-
-      if (currentUser?.id) {
-        formData.append("public_id", `user_${currentUser.id}_avatar`);
-      }
 
       // Upload to Cloudinary
       const response = await fetch(
@@ -57,7 +55,6 @@ const ProfilePage = () => {
 
       if (!response.ok) {
         const errorData = await response.json();
-        console.error("Cloudinary error:", errorData);
         throw new Error(
           `Upload failed: ${errorData.error?.message || "Unknown error"}`
         );
@@ -65,7 +62,6 @@ const ProfilePage = () => {
 
       const data = await response.json();
 
-      // Update form data with the uploaded image URL
       setFormData((prev) => ({ ...prev, avatar: data.secure_url }));
       setFilePerc(100);
       setUploading(false);
@@ -77,43 +73,51 @@ const ProfilePage = () => {
     }
   };
 
-  const handleFileUploadBase64 = (file) => {
-    if (file.size > 1024 * 1024) {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      dispatch(updateUserStart());
+
+      const res = await fetch(`/api/user/update/${currentUser._id}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await res.json();
+
+      if (data.success === false) {
+        dispatch(updateUserFailure(data.message));
+        return;
+      }
+
+      dispatch(updateUserSuccess(data));
+      setUpdateSuccess(true);
+    } catch (error) {
+      dispatch(updateUserFailure(error.message));
+    }
+  };
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.id]: e.target.value });
+  };
+
+  const handleFileSelect = (e) => {
+    const selectedFile = e.target.files[0];
+    if (!selectedFile) return;
+
+    if (
+      selectedFile.size > 2 * 1024 * 1024 ||
+      !selectedFile.type.startsWith("image/")
+    ) {
       setFileUploadError(true);
       return;
     }
 
-    const reader = new FileReader();
-    reader.onloadstart = () => {
-      setUploading(true);
-      setFileUploadError(false);
-    };
-
-    reader.onprogress = (event) => {
-      if (event.lengthComputable) {
-        const progress = (event.loaded / event.total) * 100;
-        setFilePerc(Math.round(progress));
-      }
-    };
-
-    reader.onload = () => {
-      setFormData((prev) => ({ ...prev, avatar: reader.result }));
-      setFilePerc(100);
-      setUploading(false);
-    };
-
-    reader.onerror = () => {
-      setFileUploadError(true);
-      setUploading(false);
-    };
-
-    reader.readAsDataURL(file);
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    console.log("Form data:", formData);
+    setFile(selectedFile);
   };
 
   return (
@@ -122,7 +126,7 @@ const ProfilePage = () => {
 
       <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
         <input
-          onChange={(e) => setFile(e.target.files[0])}
+          onChange={handleFileSelect}
           type="file"
           ref={fileRef}
           hidden
@@ -150,25 +154,28 @@ const ProfilePage = () => {
 
         <input
           type="text"
-          placeholder="username"
+          placeholder="Username"
           className="border p-3 rounded-lg"
-          id="username"
-          defaultValue={currentUser?.username || ""}
+          id="userName"
+          defaultValue={currentUser?.userName || ""}
+          onChange={handleChange}
         />
 
         <input
           type="email"
-          placeholder="email"
+          placeholder="Email"
           className="border p-3 rounded-lg"
           id="email"
           defaultValue={currentUser?.email || ""}
+          onChange={handleChange}
         />
 
         <input
           type="password"
-          placeholder="password"
+          placeholder="Password"
           className="border p-3 rounded-lg"
           id="password"
+          onChange={handleChange}
         />
 
         <button
@@ -184,6 +191,11 @@ const ProfilePage = () => {
         <span className="text-red-700 cursor-pointer">Delete Account</span>
         <span className="text-red-700 cursor-pointer">Sign Out</span>
       </div>
+
+      <p className="text-red-700 mt-5">{error ? error : null}</p>
+      <p className="text-green-700 mt-5">
+        {updateSuccess ? "User is updated successfully" : null}
+      </p>
     </div>
   );
 };
