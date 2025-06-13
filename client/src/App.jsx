@@ -6,6 +6,7 @@ import SignUpPage from "./pages/SignUpPage";
 import SigninPage from "./pages/SigninPage";
 import Layout from "./components/Layout";
 import PrivateRoute from "./components/PrivateRoute";
+import CreateListingPage from "./pages/CreateListingPage";
 
 function App() {
   const router = createBrowserRouter([
@@ -19,7 +20,13 @@ function App() {
         { path: "/sign-up", element: <SignUpPage /> },
         {
           element: <PrivateRoute />,
-          children: [{ path: "/profile", element: <ProfilePage /> }],
+          children: [
+            { path: "/profile", element: <ProfilePage /> },
+            {
+              path: "/create-listing",
+              element: <CreateListingPage />,
+            },
+          ],
         },
       ],
     },
