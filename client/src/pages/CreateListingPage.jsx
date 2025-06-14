@@ -1,136 +1,91 @@
+import { useState } from "react";
+import ListingFormSection from "../components/listing/ListingFormSection";
+import ImageUploadSection from "../components/listing/ImageUploadSection";
+import UploadedImages from "../components/listing/UploadedImages";
+
 const CreateListingPage = () => {
+  const [files, setFiles] = useState([]);
+  const [formData, setFormData] = useState({
+    imageUrls: [],
+  });
+  const [imageUploadError, setImageUploadError] = useState(false);
+  const [uploading, setUploading] = useState(false);
+
+  const storeImage = async (file) => {
+    return new Promise((resolve, reject) => {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("upload_preset", "user_avatars");
+
+      fetch("https://api.cloudinary.com/v1_1/dwrcdioy5/image/upload", {
+        method: "POST",
+        body: formData,
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.secure_url) {
+            resolve(data.secure_url);
+          } else {
+            reject("Upload failed");
+          }
+        })
+        .catch((err) => reject(err));
+    });
+  };
+
+  const handleImageSubmit = async () => {
+    if (files.length > 0 && files.length + formData.imageUrls.length < 7) {
+      setUploading(true);
+      setImageUploadError(false);
+      const promises = [];
+
+      for (let i = 0; i < files.length; i++) {
+        promises.push(storeImage(files[i]));
+      }
+
+      try {
+        const urls = await Promise.all(promises);
+        setFormData((prev) => ({
+          ...prev,
+          imageUrls: [...prev.imageUrls, ...urls],
+        }));
+        setUploading(false);
+      } catch (error) {
+        setImageUploadError("Image upload failed (2 mb per image)");
+        setUploading(false);
+      }
+    } else {
+      setImageUploadError("You can upload 6 images per listing");
+      setUploading(false);
+    }
+  };
+
+  const handleRemoveImage = (idx) => {
+    setFormData((prev) => ({
+      ...prev,
+      imageUrls: prev.imageUrls.filter((_, i) => i !== idx),
+    }));
+  };
+
   return (
     <main className="p-3 max-w-4xl mx-auto">
       <h1 className="text-3xl font-semibold text-center my-7">
         Create a Listing
       </h1>
       <form className="flex flex-col sm:flex-row gap-4">
-        <div className="flex flex-col gap-4 flex-1">
-          <input
-            type="text"
-            id="name"
-            placeholder="Name"
-            className="border p-3 rounded-lg"
-            maxLength="62"
-            minLength="10"
-            required
-          />
-          <textarea
-            type="text"
-            id="description"
-            placeholder="Description"
-            className="border p-3 rounded-lg"
-            required
-          />
-          <input
-            type="text"
-            id="address"
-            placeholder="Address"
-            className="border p-3 rounded-lg"
-            required
-          />
-          <div
-            className="flex gap-6 flex-wrap
-           "
-          >
-            <div>
-              <input type="checkbox" id="sale" className="w-5" />
-              <span>sell</span>
-            </div>
-            <div>
-              <input type="checkbox" id="rent" className="w-5" />
-              <span>Rent</span>
-            </div>
-            <div>
-              <input type="checkbox" id="parking" className="w-5" />
-              <span>Parking spot</span>
-            </div>
-            <div>
-              <input type="checkbox" id="furnished" className="w-5" />
-              <span>Furnished</span>
-            </div>
-            <div>
-              <input type="checkbox" id="offer" className="w-5" />
-              <span>Offer</span>
-            </div>
-          </div>
-
-          <div className="flex flex-wrap gap-6">
-            <div className="flex items-center gap-2">
-              <input
-                className="p-3 border border-gray-300 rounded-lg
-              "
-                type="number"
-                id="bedrooms"
-                min={1}
-                max={10}
-                required
-              />
-              <span>Beds</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <input
-                className="p-3 border border-gray-300 rounded-lg
-              "
-                type="number"
-                id="bathrooms"
-                min={1}
-                max={10}
-                required
-              />
-              <span>Baths</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <input
-                className="p-3 border border-gray-300 rounded-lg
-              "
-                type="number"
-                id="regularPrice"
-                min={1}
-                max={10}
-                required
-              />
-              <div className="flex flex-col items-center">
-                <p>Regular Price</p>
-                <span className="text-sm">($ / month)</span>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <input
-                className="p-3 border border-gray-300 rounded-lg
-              "
-                type="number"
-                id="discountPrice"
-                min={1}
-                max={10}
-                required
-              />
-              <div className="flex flex-col items-center">
-                <p>Discount Price</p>
-                <span className="text-sm">($ / month)</span>
-              </div>
-            </div>
-          </div>
-        </div>
+        <ListingFormSection />
         <div className="flex flex-col flex-1 gap-4">
-          <p className="font-semibold">
-            Images:
-            <span className="font-normal text-gray-600 ml-2">
-              The first image will be the cover (max 6)
-            </span>
-          </p>
-          <div className="flex gap-4">
-            <input
-              type="file"
-              accept="image/*"
-              id="images"
-              multiple
-              className="p-3 border border-gray-300 rounded  w-full"
-            />
-            <button className="p-3 text-green-700 border border-green-700 rounded uppercase hover:shadow-lg disabled:opacity-85">
-              Upload
-            </button>
-          </div>{" "}
+          <ImageUploadSection
+            files={files}
+            setFiles={setFiles}
+            handleImageSubmit={handleImageSubmit}
+            uploading={uploading}
+            imageUploadError={imageUploadError}
+          />
+          <UploadedImages
+            imageUrls={formData.imageUrls}
+            handleRemoveImage={handleRemoveImage}
+          />
           <button className="p-3 bg-slate-700 text-white rounded-lg uppercase hover:opacity-95 disabled:opacity-80">
             Create Listing
           </button>
@@ -139,4 +94,5 @@ const CreateListingPage = () => {
     </main>
   );
 };
+
 export default CreateListingPage;
