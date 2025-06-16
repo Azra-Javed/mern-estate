@@ -19,7 +19,7 @@ const ImageUploadSection = ({
           accept="image/*"
           id="images"
           multiple
-          className="p-3 border border-gray-300 rounded w-full file:border file:border-gray-400 file:p-2 file:rounded-lg"
+          className="p-3 border border-gray-300 rounded w-full file:border file:border-gray-400 file:p-2 file:rounded-lg file:cursor-pointer"
           onChange={(e) => setFiles(e.target.files)}
         />
         <button
