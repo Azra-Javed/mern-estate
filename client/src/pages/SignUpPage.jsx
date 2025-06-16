@@ -9,7 +9,7 @@ const SignUpPage = () => {
 
   const navigate = useNavigate();
 
-  const handleChage = (e) => {
+  const handleChange = (e) => {
     setFormData({
       ...formData,
       [e.target.id]: e.target.value,
@@ -54,21 +54,21 @@ const SignUpPage = () => {
           id="userName"
           placeholder="username"
           className="border p-3 rounded-lg"
-          onChange={handleChage}
+          onChange={handleChange}
         />
         <input
           type="email"
           id="email"
           placeholder="email"
           className="border p-3 rounded-lg"
-          onChange={handleChage}
+          onChange={handleChange}
         />
         <input
           type="password"
           id="password"
           placeholder="password"
           className="border p-3 rounded-lg"
-          onChange={handleChage}
+          onChange={handleChange}
         />
 
         <button
