@@ -328,12 +328,11 @@ const ProfilePage = () => {
                 >
                   Delete
                 </button>
-                <button
-                  className="text-green-700 uppercase cursor-pointer"
-                  // onClick={handleEditListing}
-                >
-                  Edit
-                </button>
+                <Link to={`update-listing/${listing._id}`}>
+                  <button className="text-green-700 uppercase cursor-pointer">
+                    Edit
+                  </button>
+                </Link>
               </div>
             </div>
           ))}

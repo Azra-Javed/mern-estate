@@ -7,6 +7,7 @@ import SigninPage from "./pages/SigninPage";
 import Layout from "./components/Layout";
 import PrivateRoute from "./components/PrivateRoute";
 import CreateListingPage from "./pages/CreateListingPage";
+import UpdateListing from "./pages/UpdateListing";
 
 function App() {
   const router = createBrowserRouter([
@@ -26,6 +27,7 @@ function App() {
               path: "/create-listing",
               element: <CreateListingPage />,
             },
+            { path: "/update-listing", element: <UpdateListing /> },
           ],
         },
       ],
