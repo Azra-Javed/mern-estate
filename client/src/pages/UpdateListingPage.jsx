@@ -35,7 +35,6 @@ const UpdateListingPage = () => {
       const listingId = params.listingId;
       const res = await fetch(`/api/listing/get/${listingId}`);
       const data = await res.json();
-      console.log("data of upfdate pagge file ", data);
 
       if (data.success === false) {
         console.log(error.message);
