@@ -7,7 +7,7 @@ import SigninPage from "./pages/SigninPage";
 import Layout from "./components/Layout";
 import PrivateRoute from "./components/PrivateRoute";
 import CreateListingPage from "./pages/CreateListingPage";
-import UpdateListing from "./pages/UpdateListing";
+import UpdateListingPage from "./pages/UpdateListingPage";
 
 function App() {
   const router = createBrowserRouter([
@@ -23,11 +23,11 @@ function App() {
           element: <PrivateRoute />,
           children: [
             { path: "/profile", element: <ProfilePage /> },
+            { path: "/create-listing", element: <CreateListingPage /> },
             {
-              path: "/create-listing",
-              element: <CreateListingPage />,
+              path: "/update-listing/:listingId",
+              element: <UpdateListingPage />,
             },
-            { path: "/update-listing", element: <UpdateListing /> },
           ],
         },
       ],

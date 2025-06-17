@@ -1,5 +1,4 @@
 const ListingFormSection = ({ formData, handleChange }) => {
-  console.log(formData);
   return (
     <div className="flex flex-col gap-4 flex-1">
       <input
