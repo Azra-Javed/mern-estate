@@ -34,11 +34,6 @@ const SignInPage = () => {
         body: JSON.stringify(formData),
       });
 
-      // if (!res.ok) {
-      //   const text = await res.text(); // log for debugging
-      //   throw new Error(`Backend error ${res.status}: ${text}`);
-      // }
-
       const data = await res.json();
       if (data.success === false) {
         dispatch(signInFailure(data.message));

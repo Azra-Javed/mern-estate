@@ -4,15 +4,17 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import SwiperCore from "swiper";
 import { Navigation } from "swiper/modules";
 import "swiper/css/bundle";
+import { useSelector } from "react-redux";
 import {
   FaBath,
   FaBed,
   FaChair,
-  FaMapMarkedAlt,
+  FaCheckCircle,
   FaMapMarkerAlt,
   FaParking,
   FaShare,
 } from "react-icons/fa";
+import Contact from "../components/Contact";
 
 const ListingPage = () => {
   SwiperCore.use([Navigation]);
@@ -21,6 +23,9 @@ const ListingPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [contact, setContact] = useState(false);
+
+  const { currentUser } = useSelector((state) => state.user);
 
   useEffect(() => {
     const fetchListing = async () => {
@@ -93,11 +98,7 @@ const ListingPage = () => {
               </SwiperSlide>
             ))}
           </Swiper>
-          {copied && (
-            <p className="fixed top-[23%] right-[5%] z-10 rounded-md bg-slate-100 p-2">
-              Link copied!
-            </p>
-          )}
+
           <div className="fixed top-[13%] right-[3%] z-10 border rounded-full w-12 h-12 flex justify-center items-center bg-slate-100 cursor-pointer">
             <FaShare
               className="text-slate-500"
@@ -110,6 +111,13 @@ const ListingPage = () => {
               }}
             />
           </div>
+
+          {copied && (
+            <div className="fixed top-20 right-4 z-30 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg animate-bounce">
+              <FaCheckCircle className="inline mr-2" />
+              Link copied!
+            </div>
+          )}
 
           <div className="flex flex-col max-w-4xl mx-auto p-3 my-7 gap-4">
             <p className="text-2xl font-semibold">
@@ -161,6 +169,18 @@ const ListingPage = () => {
                 {listing.furnished ? "Furnished" : "Unfurnished"}
               </li>
             </ul>
+
+            {currentUser && listing.userRef !== currentUser._id && !contact && (
+              <button
+                onClick={() => {
+                  setContact(true);
+                }}
+                className="bg-slate-700 rounded-lg text-white uppercase hover:opacity-95 p-3"
+              >
+                Contact lanlord
+              </button>
+            )}
+            {contact && <Contact listing={listing} />}
           </div>
         </>
       )}
