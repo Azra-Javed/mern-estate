@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import ListingItem from "../components/listing/ListingItem";
 const SearchPage = () => {
   const [sidebarData, setSidebarData] = useState({
     searchTerm: "",
@@ -110,8 +111,8 @@ const SearchPage = () => {
   console.log(sidebarData);
   return (
     <div className="flex flex-col md:flex-row min-h-screen">
-      <div className="md:w-1/3 p-6 border-r border-gray-200">
-        <h2 className="text-xl font-bold mb-6">Search Filters</h2>
+      <div className="md:w-1/3 p-7 border-r border-gray-200">
+        <h2 className="text-xl font-bold mb-6 mt-1">Search Filters</h2>
         <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
           <div>
             <label className="block text-sm font-semibold mb-1">
@@ -225,12 +226,35 @@ const SearchPage = () => {
         </form>
       </div>
 
-      <div className="flex-1 p-6">
-        <h1 className="text-2xl font-bold border-b pb-2 mb-4">
+      {/* listing results */}
+      <div className="flex-1 p-7">
+        <h1 className="text-2xl font-bold border border-gray-100 border-b pb-2 mb-4 ">
           Listing Results
         </h1>
-        <div className="text-gray-500 italic">
-          No listings found. Try adjusting your filters.
+
+        <div className="flex flex-wrap gap-4">
+          {!loading && listings.length === 0 && (
+            <div className="text-gray-600 italic">
+              No listings found. Try adjusting your filters.
+            </div>
+          )}
+
+          {loading && (
+            <div className="w-full min-h-[60vh] flex items-center justify-center">
+              <div className="flex flex-col items-center justify-center gap-4">
+                <div className="w-12 h-12 border-4 border-slate-500 border-t-transparent rounded-full animate-spin"></div>
+                <p className="text-xl font-semibold text-slate-600 animate-pulse">
+                  Loading...
+                </p>
+              </div>
+            </div>
+          )}
+
+          {!loading &&
+            listings &&
+            listings.map((listing) => (
+              <ListingItem key={listing._id} listing={listing} />
+            ))}
         </div>
       </div>
     </div>
