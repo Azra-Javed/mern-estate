@@ -1,9 +1,29 @@
 import { FaSearch } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { useEffect, useState } from "react";
 
 const Header = () => {
   const { currentUser } = useSelector((state) => state.user);
+  const [searchTerm, setSearchTerm] = useState("");
+  const navigate = useNavigate();
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const urlParams = new URLSearchParams(window.location.search);
+    urlParams.set("searchTerm", searchTerm); // Fixed key name
+    const searchQuery = urlParams.toString();
+    navigate(`/search?${searchQuery}`);
+  };
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(location.search);
+    const searchTermFromUrl = urlParams.get("searchTerm"); // Fixed variable name
+    if (searchTermFromUrl) {
+      setSearchTerm(searchTermFromUrl);
+    }
+  }, [location.search]);
+
   return (
     <header className="bg-slate-200 shadow-md text-slate-800">
       <div className="max-w-7xl mx-auto flex items-center justify-between px-4 py-3">
@@ -15,14 +35,18 @@ const Header = () => {
         </Link>
 
         <div className="flex items-center gap-4">
-          <form>
+          <form onSubmit={handleSubmit}>
             <div className="relative flex items-center bg-white rounded-full border border-slate-300 shadow-sm w-48 sm:w-64 px-4 py-2">
               <input
                 type="text"
                 placeholder="Search..."
                 className="bg-transparent w-full pr-6 focus:outline-none text-sm text-slate-700 placeholder-slate-400"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
               />
-              <FaSearch className="text-slate-500 cursor-pointer absolute right-3" />
+              <button>
+                <FaSearch className="text-slate-500 cursor-pointer absolute right-3 top-3" />
+              </button>
             </div>
           </form>
 
