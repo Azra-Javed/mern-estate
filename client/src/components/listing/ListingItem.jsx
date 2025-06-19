@@ -16,7 +16,7 @@ const ListingItem = ({ listing }) => {
             </p>
             <div className="flex items-center gap-1">
               <MdLocationOn className="h-4 w-4 text-green-700" />
-              <p className=" truncate text-sm text-gray-600 w-full">
+              <p className=" truncate text-sm  text-gray-600 w-full">
                 {listing.address}
               </p>
             </div>
