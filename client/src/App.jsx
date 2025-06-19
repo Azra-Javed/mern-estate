@@ -9,6 +9,7 @@ import PrivateRoute from "./components/PrivateRoute";
 import CreateListingPage from "./pages/CreateListingPage";
 import UpdateListingPage from "./pages/UpdateListingPage";
 import ListingPage from "./pages/ListingPage";
+import SearchPage from "./pages/SearchPage";
 
 function App() {
   const router = createBrowserRouter([
@@ -32,6 +33,7 @@ function App() {
           ],
         },
         { path: "/listing/:listingId", element: <ListingPage /> },
+        { path: "/search", element: <SearchPage /> },
       ],
     },
   ]);
