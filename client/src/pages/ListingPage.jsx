@@ -156,8 +156,8 @@ const ListingPage = () => {
               <li className="flex items-center gap-1 whitespace-nowrap">
                 <FaBath className="text-lg" />
                 {listing.bathrooms > 1
-                  ? `${listing.bathrooms} beds`
-                  : `${listing.bathrooms} bed`}
+                  ? `${listing.bathrooms} baths`
+                  : `${listing.bathrooms} bath`}
               </li>
               <li className="flex items-center gap-1 whitespace-nowrap">
                 <FaParking className="text-lg" />

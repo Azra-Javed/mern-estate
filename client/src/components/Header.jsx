@@ -29,7 +29,7 @@ const Header = () => {
       <div className="max-w-7xl mx-auto flex items-center justify-between px-4 py-3">
         <Link to="/">
           <h1 className="font-bold text-lg sm:text-2xl flex items-center gap-1">
-            <span className="text-slate-500">Sahand</span>
+            <span className="text-slate-500">Aura</span>
             <span className="text-slate-700">Estate</span>
           </h1>
         </Link>
@@ -45,7 +45,7 @@ const Header = () => {
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
               <button>
-                <FaSearch className="text-slate-500 cursor-pointer absolute right-3 top-3" />
+                <FaSearch className="text-slate-500 cursor-pointer absolute right-4 top-2.5" />
               </button>
             </div>
           </form>

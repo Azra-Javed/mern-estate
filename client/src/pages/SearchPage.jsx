@@ -239,7 +239,7 @@ const SearchPage = () => {
             type="submit"
             className="bg-slate-700 text-white font-semibold p-3 rounded-lg uppercase hover:bg-slate-800 transition"
           >
-            Search
+            Apply Filters
           </button>
         </form>
       </div>
