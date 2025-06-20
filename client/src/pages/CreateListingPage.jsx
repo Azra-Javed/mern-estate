@@ -4,6 +4,7 @@ import ImageUploadSection from "../components/listing/ImageUploadSection";
 import UploadedImages from "../components/listing/UploadedImages";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const CreateListingPage = () => {
   const { currentUser } = useSelector((state) => state.user);
@@ -67,12 +68,15 @@ const CreateListingPage = () => {
           ...prev,
           imageUrls: [...prev.imageUrls, ...urls],
         }));
+        toast.success("Images uploaded successfully!");
         setUploading(false);
       } catch (error) {
+        toast.error("Image upload failed (2 MB per image)");
         setImageUploadError("Image upload failed (2 mb per image)");
         setUploading(false);
       }
     } else {
+      toast.error("You can upload a maximum of 6 images per listing");
       setImageUploadError("You can upload 6 images per listing");
       setUploading(false);
     }
@@ -115,11 +119,15 @@ const CreateListingPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (formData.imageUrls.length < 1) {
+      toast.error("You must upload at least one image");
+      return;
+    }
+    if (+formData.regularPrice < +formData.discountPrice) {
+      toast.error("Discount price must be lower than regular price");
+      return;
+    }
     try {
-      if (formData.imageUrls.length < 1)
-        return setError("You must upload at least one image");
-      if (+formData.regularPrice < +formData.discountPrice)
-        return setError("Discount price must be lower than regular price");
       setLoading(true);
       setError(false);
 
@@ -138,8 +146,10 @@ const CreateListingPage = () => {
       if (data.success === false) {
         setError(data.message);
       }
+      toast.success("Listing created successfully!");
       navigate(`/listing/${data._id}`);
     } catch (error) {
+      toast.error("Something went wrong while creating the listing.");
       setError(error.message);
       setLoading(false);
     }
@@ -169,7 +179,6 @@ const CreateListingPage = () => {
           >
             {loading ? "Creating..." : "Create Listing"}
           </button>
-          {error && <p className="text-sm text-red-700 mt-3">{error}</p>}
         </div>
       </form>
     </main>

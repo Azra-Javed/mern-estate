@@ -12,6 +12,7 @@ import {
   SignOutUserSuccess,
 } from "../redux/user/userSlice";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const ProfilePage = () => {
   const fileRef = useRef(null);
@@ -99,13 +100,16 @@ const ProfilePage = () => {
 
       if (data.success === false) {
         dispatch(updateUserFailure(data.message));
+        toast.error(data.message);
         return;
       }
 
       dispatch(updateUserSuccess(data));
+      toast.success("User updated successfully!");
       setUpdateSuccess(true);
     } catch (error) {
       dispatch(updateUserFailure(error.message));
+      toast.error("Something went wrong while updating profile.");
     }
   };
 
@@ -122,6 +126,7 @@ const ProfilePage = () => {
       !selectedFile.type.startsWith("image/")
     ) {
       setFileUploadError(true);
+      toast.error("Invalid image (must be < 2MB and an image file).");
       return;
     }
 
@@ -139,12 +144,15 @@ const ProfilePage = () => {
       const data = await res.json();
       if (data.success === false) {
         dispatch(deleteUserFailure(data.message));
+        toast.error(data.message);
         return;
       }
 
       dispatch(deleteUserSuccess(data));
+      toast.success("User deleted successfully!");
     } catch (error) {
       dispatch(deleteUserFailure(error.message));
+      toast.error("Failed to delete user.");
     }
   };
 
@@ -152,15 +160,20 @@ const ProfilePage = () => {
     try {
       dispatch(SignOutUserStart());
       const res = await fetch(`/api/auth/signout`);
+      const data = await res.json();
 
-      const data = await data.json();
-      if (data.success === false) dispatch(SignOutUserFailure(data.message));
-      return;
+      if (data.success === false) {
+        dispatch(SignOutUserFailure(data.message));
+        toast.error(data.message);
+        return;
+      }
+
+      dispatch(SignOutUserSuccess());
+      toast.success("Signed out successfully!");
     } catch (error) {
       dispatch(SignOutUserFailure(error.message));
+      toast.error("Failed to sign out.");
     }
-
-    dispatch(SignOutUserSuccess());
   };
 
   const handleShowListing = async () => {
@@ -168,12 +181,18 @@ const ProfilePage = () => {
       setListingError(false);
       const res = await fetch(`/api/user/listings/${currentUser._id}`);
       const data = await res.json();
+
       if (data.success === false) {
         setListingError(true);
+        toast.error("Error fetching listings.");
+        return;
       }
+
       setUserListings(data);
+      toast.success("Listings loaded successfully!");
     } catch (error) {
       setListingError(true);
+      toast.error("Failed to load listings.");
     }
   };
 
@@ -182,17 +201,20 @@ const ProfilePage = () => {
       const res = await fetch(`/api/listing/delete/${listingId}`, {
         method: "DELETE",
       });
+
       const data = await res.json();
+
       if (data.success === false) {
-        console.log(error.message);
+        toast.error("Failed to delete listing.");
         return;
       }
 
       setUserListings((prev) =>
         prev.filter((listing) => listing._id !== listingId)
       );
+      toast.success("Listing deleted!");
     } catch (error) {
-      console.log(error.message);
+      toast.error("Error deleting listing.");
     }
   };
 
@@ -282,10 +304,6 @@ const ProfilePage = () => {
         </span>
       </div>
 
-      <p className="text-red-700 mt-5">{error ? error : null}</p>
-      <p className="text-green-700 mt-5">
-        {updateSuccess ? "User is updated successfully" : null}
-      </p>
       <button
         onClick={handleShowListing}
         type="button"

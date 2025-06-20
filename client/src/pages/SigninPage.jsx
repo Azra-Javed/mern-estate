@@ -7,6 +7,7 @@ import {
   signInSuccess,
 } from "../redux/user/userSlice";
 import OAuth from "../components/OAuth";
+import { toast } from "react-toastify";
 
 const SignInPage = () => {
   const [formData, setFormData] = useState({});
@@ -37,13 +38,16 @@ const SignInPage = () => {
       const data = await res.json();
       if (data.success === false) {
         dispatch(signInFailure(data.message));
+        toast.error(data.message || "Sign in failed!");
         return;
       }
 
       dispatch(signInSuccess(data));
+      toast.success("Signed in successfully!");
       navigate("/");
     } catch (error) {
       dispatch(signInFailure(error.message));
+      toast.error("Something went wrong. Please try again.");
     }
   };
 
@@ -81,7 +85,6 @@ const SignInPage = () => {
           <span className="text-blue-700">Sign up</span>
         </Link>
       </div>
-      {error && <p className="text-red-500 mt-5">{error}</p>}
     </div>
   );
 };

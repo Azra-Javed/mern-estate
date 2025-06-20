@@ -15,6 +15,7 @@ import {
   FaShare,
 } from "react-icons/fa";
 import Contact from "../components/Contact";
+import { toast } from "react-toastify";
 
 const ListingPage = () => {
   SwiperCore.use([Navigation]);
@@ -34,7 +35,7 @@ const ListingPage = () => {
         const data = await res.json();
 
         if (data.success === false) {
-          setError(true);
+          toast.error(data.message || "Failed to load listing!");
           setLoading(false);
           return;
         }
@@ -44,6 +45,7 @@ const ListingPage = () => {
         setError(false);
       } catch (err) {
         console.error("Failed to fetch listing:", err);
+        toast.error("Something went wrong while fetching the listing.");
         setError(true);
         setLoading(false);
       }

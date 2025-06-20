@@ -4,6 +4,7 @@ import ImageUploadSection from "../components/listing/ImageUploadSection";
 import UploadedImages from "../components/listing/UploadedImages";
 import { useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const UpdateListingPage = () => {
   const { currentUser } = useSelector((state) => state.user);
@@ -37,7 +38,7 @@ const UpdateListingPage = () => {
       const data = await res.json();
 
       if (data.success === false) {
-        console.log(error.message);
+        toast.error(data.message);
         return;
       }
 
@@ -134,8 +135,11 @@ const UpdateListingPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      if (formData.imageUrls.length < 1)
-        return setError("You must upload at least one image");
+      if (formData.imageUrls.length < 1) {
+        toast.error("Discount price must be lower than regular price");
+        return;
+      }
+
       if (+formData.regularPrice < +formData.discountPrice)
         return setError("Discount price must be lower than regular price");
       setLoading(true);
@@ -154,12 +158,14 @@ const UpdateListingPage = () => {
       const data = await res.json();
       setLoading(false);
       if (data.success === false) {
-        setError(data.message);
+        toast.error(data.message || "Failed to update listing");
+        return;
       }
+      toast.success("Listing updated successfully!");
       navigate(`/listing/${data._id}`);
     } catch (error) {
-      setError(error.message);
       setLoading(false);
+      toast.error(error.message || "Something went wrong");
     }
   };
   return (
@@ -187,7 +193,6 @@ const UpdateListingPage = () => {
           >
             {loading ? "Updating..." : "Update Listing"}
           </button>
-          {error && <p className="text-sm text-red-700 mt-3">{error}</p>}
         </div>
       </form>
     </main>
