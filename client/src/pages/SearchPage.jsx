@@ -139,7 +139,7 @@ const SearchPage = () => {
             <input
               type="text"
               id="searchTerm"
-              placeholder="e.g. apartment in Islamabad"
+              placeholder="e.g. modern city..."
               className="border border-gray-300 rounded-lg  p-3 w-full focus:outline-none focus:ring-2 focus:ring-slate-400"
               value={sidebarData.searchTerm}
               onChange={handleChange}

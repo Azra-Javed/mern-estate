@@ -57,7 +57,7 @@ const HomePage = () => {
           place with ease
         </h1>
         <div className="text-gray-400 text-xs sm:text-sm">
-          Sahand Estate is your trusted partner in finding the perfect place to
+          Aura Estate is your trusted partner in finding the perfect place to
           live.
           <br />
           We have a wide range of properties for you to choose from.
